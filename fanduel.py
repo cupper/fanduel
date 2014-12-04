@@ -3,62 +3,44 @@
 """fanduel.com API provider."""
 
 import sys
-import getopt
+import optparse
 import getpass
 from grab import Grab
+from grab.tools.logs import default_logging
 
-LOGIN_PAGE = 'https://www.fanduel.com/p/login'
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-class CmdOptions:
-    def __init__(self):
-        self.login = None;
-        self.password = None;
-
+LOGIN_PAGE = 'https://www.fanduel.com/login'
 
 def parseOptions(argv):
-    if argv is None:
-        argv = sys.argv
-    try:
-        cmdOpt = CmdOptions()
-        #parse options
-        try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help"])
-        except getopt.error, msg:
-            raise Usage(msg)
-        # process options
-        for o, a in opts:
-            if o in ("-h", "--help"):
-                print __doc__
-                return 0,None
-            elif o in ("-u", "--user"):
-                cmdOpt.login = a
-            elif o in ("-p", "--password"):
-                cmdOpt.password = getpass.getpass()
-        # process arguments
-        for arg in args:
-            process(arg) # process() is defined elsewhere
-    except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use --help"
-        return 2,None
-
-    return 0,cmdOpt
+    usage = "usage: %prog [options] arg"
+    parser = optparse.OptionParser(usage)
+    parser.add_option("-u", "--username", 
+                        help="login to access to fanduel.com, " \
+                        "password will requested from stdin")
+    (options, args) = parser.parse_args(argv)
+    if options.username:
+        options.password = getpass.getpass()
+    #if some error in command line:
+    #    parser.error("incorrect number of arguments")
+    return options
 
 class FanduelApiProvider:
     def __init__(self):
-        self.grab = None
-    def auth(login, password)
+        self.grab = Grab(log_dir='/tmp/fanduel')
+    def auth(self, login, password):
+        self.grab.go(LOGIN_PAGE)
+        self.grab.set_input('email', login)
+        self.grab.set_input('password', password)
+        self.grab.submit()
+        return self.grab.response.code
 
 def main(argv=None):
-    ret, cmdOptions = parseOptions(argv)
-    if cmdOptions is None:
-        return ret
+    cmdOps = parseOptions(argv)
+    default_logging()
 
+    api = FanduelApiProvider();
+    print api.auth(cmdOps.username, cmdOps.password)
 
+    return 0
 
 
 if __name__ == "__main__":
