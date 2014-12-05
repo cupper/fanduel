@@ -7,6 +7,7 @@ import optparse
 import getpass
 import re
 import os
+import json
 from grab import Grab
 from grab.tools.logs import default_logging
 
@@ -36,13 +37,25 @@ def parseOptions(argv):
                         help="email to access to fanduel.com, " \
                         "password will requested from stdin")
     (options, args) = parser.parse_args(argv)
-    options.password = None
-    if options.email:
-        options.password = getpass.getpass()
-
+ 
     #if some error in command line:
     #    parser.error("incorrect number of arguments")
     return options
+
+class ContestAdapter:
+    def __init__(self, dict):
+        self.dict = dict
+
+    def id(self): return self.dict['uniqueId']
+    def gameId(self): return self.dict['gameId'] 
+    def name(self): return self.dict['title']
+    def sport(self): return self.dict['sport']
+    def entryFee(self): return self.dict['entryFee']
+    def prize(self): return self.dict['prizes']
+    def size(self): return self.dict['size']
+    def entered(self): return self.dict['stack']
+    def salary(self): return self.dect['cap']
+
 
 class FanduelApiProvider:
     def __init__(self):
@@ -51,12 +64,13 @@ class FanduelApiProvider:
             os.makedirs(logDir)
         self.grab = Grab(log_dir=logDir)
 
-    def auth(self, email, password):
+    def auth(self, email):
         cookiefile = "%s.coockie" % (re.sub('[!@#$.]', '', email))
         open(cookiefile, 'a+').close()
         self.grab.setup(cookiefile=cookiefile)
         if not os.path.isfile(cookiefile):
             print "real authorization"
+            password = getpass.getpass()
             self.grab.go(LOGIN_PAGE)
             self.grab.set_input('email', email)
             self.grab.set_input('password', password)
@@ -67,18 +81,33 @@ class FanduelApiProvider:
         return self.grab.response.code
 
     def getContests(self):
-        print self.grab.response.body[0:100]       
+        response = self.grab.response.body;
+        rawJsonDataBegin = response.find('LobbyConnection.initialData') + len('LobbyConnection.initialData = ')
+        rawJsonDataEnd = response.rfind(';', rawJsonDataBegin, response.find('LobbyConnection.lastUpdate'))
+        rawJsonInitData = response[rawJsonDataBegin:rawJsonDataEnd]
+        jsonInitData = json.loads(rawJsonInitData)
+        return jsonInitData['additions']
+
 
 def main(argv=None):
     cmdOps = parseOptions(argv)
     default_logging()
 
     api = FanduelApiProvider()
-    if not api.auth(cmdOps.email, cmdOps.password) == 200:
+    if not api.auth(cmdOps.email) == 200:
         return 2;
     print "Authorization passed"
 
-    api.getContests()
+    contests = api.getContests()
+    print "loaded %d contests" % (len(contests))
+
+    repet10times = 5;
+    for c in contests:
+        if repet10times == 0: break;
+        else: repet10times -= 1
+        for k,v in c.iteritems():
+            print "[%s] %s" % (k, v)
+        print ""
 
     return 0
 
