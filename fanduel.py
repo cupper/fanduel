@@ -8,11 +8,18 @@ import getpass
 import re
 import os
 import json
+import StringIO
 from grab import Grab
 from grab.tools.logs import default_logging
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 MAIN_PAGE = 'https://www.fanduel.com'
 LOGIN_PAGE = 'https://www.fanduel.com/login'
+
+# first - gameId
+# second - tableId
+ENTER_GAME_PAGE = 'https://www.fanduel.com/e/Game/%s?tableId=%s&fromLobby=true'
 
 # <form action='https://www.fanduel.com/c/CCEntry' id='enterForm'>
 
@@ -37,24 +44,127 @@ def parseOptions(argv):
                         help="email to access to fanduel.com, " \
                         "password will requested from stdin")
     (options, args) = parser.parse_args(argv)
- 
-    #if some error in command line:
+    #if something goes wrong:
     #    parser.error("incorrect number of arguments")
     return options
 
-class ContestAdapter:
-    def __init__(self, dict):
-        self.dict = dict
 
-    def id(self): return self.dict['uniqueId']
-    def gameId(self): return self.dict['gameId'] 
-    def name(self): return self.dict['title']
-    def sport(self): return self.dict['sport']
-    def entryFee(self): return self.dict['entryFee']
-    def prize(self): return self.dict['prizes']
-    def size(self): return self.dict['size']
-    def entered(self): return self.dict['stack']
-    def salary(self): return self.dect['cap']
+class Contest:
+    def __init__(self, dictOfProperties):
+        self.properties = dictOfProperties
+
+    def id(self):       return self.__getBy__('uniqueId')
+    def gameId(self):   return self.__getBy__('gameId') 
+    def title(self):     return self.__getBy__('title')
+    def sport(self):    return self.__getBy__('sport')
+    def tableId(self):  return self.__getBy__('tableSpecId')
+    def entryFee(self): return int(self.__getBy__('entryFee'))
+    def prize(self):    return int(self.__getBy__('prizes'))
+    def salary(self):   return int(self.__getBy__('cap'))
+    def size(self):     return int(self.__getBy__('size'))
+    def entered(self):  
+        try:
+            return int(self.__getBy__('entriesData'))
+        except Exception:
+            return int(self.__getBy__('stack'))
+    def freeSpace(self): return self.size() - self.entered()
+
+    def __getBy__(self, key):
+        if key not in self.properties:
+            raise Exception("Property '%s' not available in contest %s" % \
+                (key, json.dumps(self.properties, indent=2)))
+        return self.properties[key]
+
+    def __str__(self):
+        return json.dumps(self.properties, indent=2)
+
+
+class ContestsProvider:
+    def __init__(self, listOfContests):
+        self.contests = [c if isinstance(c, Contest) else Contest(c) for c in listOfContests]
+
+    def getNFL(self):
+        try:
+            return self.nfl
+        except AttributeError:
+            self.nfl = ContestsProvider(self.__filterBy__('sport', 'nfl'))
+            return self.nfl
+
+    def getFreeGames(self):
+        try:
+            return self.freeGames
+        except AttributeError:
+            self.freeGames = ContestsProvider(self.__filterBy__('entryFee', 0))
+            return self.freeGames
+
+    def __filterBy__(self, key, value):
+        filteredContests = []
+        for c in self.contests:
+            if c.__getBy__(key) == value:
+                filteredContests.append(c)
+        return filteredContests
+
+    def __len__(self): 
+        return len(self.contests)
+    def __iter__(self):
+        for elem in self.contests:
+            yield elem
+    def __getitem__(self, key):
+        return self.contests[key]
+
+
+class Player:
+    def __init__(self, playerTuple):
+        self.id = playerTuple[0]
+        self.properties = playerTuple[1]
+
+    def id(self):       return self.id
+    def position(self): return self.__safeIndex__(0)
+    def name(self):     return self.__safeIndex__(1)
+    def fixture(self):  return self.__safeIndex__(2)
+    def teamId(self):   return self.__safeIndex__(3)
+    def salary(self):   return self.__safeIndex__(5)
+
+    def __safeIndex__(self, index):
+        if (index < 0) or (index >= len(self.properties)):
+            raise Exception("Index '%d' not available in player %s" % \
+                (index, json.dumps(self.properties, indent=2)))
+        return self.properties[index]
+
+    def __str__(self):
+        return json.dumps(self.properties, indent=2)
+
+
+class PlayersProvider:
+    def __init__(self, listOfTuples):
+        self.players = [p if isinstance(p, Player) else Player(p) for p in listOfTuples.items()]
+
+    def dumpSalariesToFile(self, filename = 'salaries.txt'):
+        dumpFile = open(filename, 'w')
+        if not dumpFile:
+            raise Exception("Can not open the file '%s'" % (filename))
+        
+        duplicates = {}
+        for p in self.players:
+            dumpFile.write("%s, %s\n" % (p.name(), p.salary()))
+            if p.name() in duplicates:
+                duplicates[p.name()] += 1
+            else:
+                duplicates[p.name()] = 1
+
+        if len(duplicates) > 0:
+            print "Players with the same names:"
+            for name,times in duplicates.iteritems():
+                if times > 1:
+                    print "\t %s - %d" % (name,times)
+
+    def __len__(self):
+        return len(self.players)
+    def __iter__(self):
+        for elem in self.players:
+            yield elem
+    def __getitem__(self, key):
+        return self.players[key]
 
 
 class FanduelApiProvider:
@@ -65,10 +175,10 @@ class FanduelApiProvider:
         self.grab = Grab(log_dir=logDir)
 
     def auth(self, email):
-        cookiefile = "%s.coockie" % (re.sub('[!@#$.]', '', email))
-        open(cookiefile, 'a+').close()
-        self.grab.setup(cookiefile=cookiefile)
+        cookiefile = "%s.cookie" % (re.sub('[!@#$.]', '', email))
         if not os.path.isfile(cookiefile):
+            open(cookiefile, 'a+').close()
+            self.grab.setup(cookiefile=cookiefile)
             print "real authorization"
             password = getpass.getpass()
             self.grab.go(LOGIN_PAGE)
@@ -77,6 +187,7 @@ class FanduelApiProvider:
             self.grab.submit()
         else:
             print "use coockie"
+            self.grab.setup(cookiefile=cookiefile)
             self.grab.go(MAIN_PAGE)
         return self.grab.response.code
 
@@ -88,6 +199,52 @@ class FanduelApiProvider:
         jsonInitData = json.loads(rawJsonInitData)
         return jsonInitData['additions']
 
+    def openContest(self, contest):
+        contestUrl = ENTER_GAME_PAGE % (contest.gameId(), contest.tableId())
+        #print "enter to %s" % (contestUrl)
+        self.grab.go(contestUrl)
+        #print "return code [%s]" % (self.grab.response.code)
+
+    def getPlayerData(listOfPlayers):
+        jsonPlayers = []
+        for p in listOfPlayers:
+            jsonPlayer = [p.position(), p.id(), p.fixture(), p.teamId()]
+            jsonPlayers.append(json.dumps(jsonPlayer))
+        playerData = json.dumps(jsonPlayers)
+        return playerData
+
+    def enterContest(self, contest, playerData):
+        self.openContest(contest)
+        self.grab.set_input('playerData', playerData)
+        self.grab.set_input('entryForm-tablespec_id', '')
+        self.grab.submit()
+        return self.grab.response.code
+
+    def getPlayers(self, contest):
+        self.openContest(contest)
+        response = self.grab.response.body;
+        rawJsonDataBegin = response.find('FD.playerpicker.allPlayersFullData') + len('FD.playerpicker.allPlayersFullData = ')
+        rawJsonDataEnd = response.rfind(';', rawJsonDataBegin, response.find('FD.playerpicker.teamIdToFixtureCompactString'))
+        rawJsonData = response[rawJsonDataBegin:rawJsonDataEnd]
+        tmp = json.loads(rawJsonData)
+        return tmp
+
+
+class FanduelSelenium:
+    def __init__(self):
+        self.driver = webdriver.Firefox()
+
+    def auth(self, email):
+        cookiefile = "%s_.cookie" % (re.sub('[!@#$.]', '', email))
+        open(cookiefile, 'a+').close()
+        password = getpass.getpass()
+        self.driver.get(LOGIN_PAGE)
+        loginForm = self.driver.find_element_by_id('ccf0')
+        loginForm.find_element_by_id('email').send_keys(email)
+        loginForm.find_element_by_id('password').send_keys(password)
+        loginForm.submit()
+        cookiefile.write(json.dumps((self.driver.get_cookies())))
+
 
 def main(argv=None):
     cmdOps = parseOptions(argv)
@@ -98,19 +255,31 @@ def main(argv=None):
         return 2;
     print "Authorization passed"
 
-    contests = api.getContests()
-    print "loaded %d contests" % (len(contests))
+    allGames = ContestsProvider(api.getContests())
+    print "loaded %d contests" % (len(allGames))
 
-    repet10times = 5;
-    for c in contests:
-        if repet10times == 0: break;
-        else: repet10times -= 1
-        for k,v in c.iteritems():
-            print "[%s] %s" % (k, v)
-        print ""
+    nflGames = allGames.getNFL()
+    print "found %d NFL games" % (len(nflGames))
 
+    #freeNflGames = nflGames.getFreeGames()
+    #print "found %d NFL games" % (len(freeNflGames))
+
+    #predef = '[["QB",34308,"86901","12"],["RB",10777,"86901","11"],["RB",6728,"86905","16"],["WR",11505,"86906","13"],["WR",14187,"86783","8"],["WR",27445,"86904","28"],["TE",14394,"86906","13"],["K",6767,"86784","9"],["D",12534,"86784","9"]]'
+    #for game in freeNflGames:
+    #    if game.freeSpace() > 0:
+    #        ret = api.enterContest(game, predef)
+    #        print "Enter to '%s' : %d" % (game.title(), ret) 
+    #        break
+
+    for c in nflGames:
+        players = PlayersProvider(api.getPlayers(c))
+        if len(players) == 553:
+            players.dumpSalariesToFile()
+            break
+                     
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    argv = ["-e", "cupper.jj@gmail.com"]
+    sys.exit(main(argv))
