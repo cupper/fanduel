@@ -9,12 +9,17 @@ import re
 import os
 import json
 import StringIO
+import time
+import pickle
+import math
 from grab import Grab
 from grab.tools.logs import default_logging
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 
 MAIN_PAGE = 'https://www.fanduel.com'
+HOME_PAGE = 'https://www.fanduel.com/p/Home'
 LOGIN_PAGE = 'https://www.fanduel.com/login'
 
 # first - gameId
@@ -53,11 +58,12 @@ class Contest:
     def __init__(self, dictOfProperties):
         self.properties = dictOfProperties
 
-    def id(self):       return self.__getBy__('uniqueId')
+    def uniqueId(self):       return self.__getBy__('uniqueId')
     def gameId(self):   return self.__getBy__('gameId') 
-    def title(self):     return self.__getBy__('title')
+    def title(self):    return self.__getBy__('title')
     def sport(self):    return self.__getBy__('sport')
-    def tableId(self):  return self.__getBy__('tableSpecId')
+    def tableSpecId(self):  return self.__getBy__('tableSpecId')
+    def url(self):      return MAIN_PAGE + self.__getBy__('entryURL')
     def entryFee(self): return int(self.__getBy__('entryFee'))
     def prize(self):    return int(self.__getBy__('prizes'))
     def salary(self):   return int(self.__getBy__('cap'))
@@ -114,16 +120,33 @@ class ContestsProvider:
 
 
 class Player:
-    def __init__(self, playerTuple):
-        self.id = playerTuple[0]
-        self.properties = playerTuple[1]
+    def __init__(self, uniqid, data):
+        self.uniqid = uniqid
+        self.properties = data
 
-    def id(self):       return self.id
+    def id(self):       return self.uniqid
     def position(self): return self.__safeIndex__(0)
     def name(self):     return self.__safeIndex__(1)
     def fixture(self):  return self.__safeIndex__(2)
     def teamId(self):   return self.__safeIndex__(3)
     def salary(self):   return self.__safeIndex__(5)
+
+    def diff(self, other):
+        buff = StringIO.StringIO()
+        if self.id() != other.id():
+            buff.write("id: %d vs. %d\n" % (self.id(), other.id()))
+        if len(self.properties) != len(other.properties):
+            buff.write("lenOfProp: %d vs. %d\n" % (len(self.properties), len(other.properties)))
+        minLen = min(len(self.properties), len(other.properties))
+        for i in range(0,minLen):
+            if self.properties[i] != other.properties[i]:
+                buff.write("[%d] %s vs. %s\n" % (i, self.properties[i], other.properties[i]))
+        prop = self.properties
+        if minLen == len(self.properties):
+            prop = other.properties
+        for i in range(minLen, len(prop)):
+            buff.write("[%d] %s\n" % (i, prop[i]))
+        return buff.getvalue()
 
     def __safeIndex__(self, index):
         if (index < 0) or (index >= len(self.properties)):
@@ -133,11 +156,50 @@ class Player:
 
     def __str__(self):
         return json.dumps(self.properties, indent=2)
+    def __eq__(self, other):
+        return (self.uniqid == other.uniqid) and (set(self.properties) == set(other.properties))
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class PlayersProvider:
-    def __init__(self, listOfTuples):
-        self.players = [p if isinstance(p, Player) else Player(p) for p in listOfTuples.items()]
+    def __init__(self, dictOfPlayers):
+        self.players = {}
+        for uniqid, data in dictOfPlayers.iteritems():
+            player = Player(uniqid, data)
+            self.players[player.name()] = player
+
+    def merge(self, playersProvider):
+        playersCollision = open('players_collision.txt', 'a')
+        foundCollisions = 0
+        added = 0
+        for name, player in playersProvider.players.iteritems():
+            if name not in self.players.keys():
+                self.players[name] = player
+                added += 1
+            elif player != self.players[name]:
+                playersCollision.write(name + '\n')
+                playersCollision.write(player.diff(self.players[name]) + '\n')
+                foundCollisions += 1
+        if foundCollisions > 0:
+            print "Found collisions %d" % (foundCollisions)
+        playersCollision.close()
+        return added
+
+    def saveToFile(self, filename = 'players.txt'):
+        dumpFile = open(filename, 'w')
+        if not dumpFile:
+            raise Exception("Can not open the file '%s'" % (filename))
+        pickle.Pickler(file=dumpFile).dump(self)
+        dumpFile.close()
+
+    def loadFromFile(self, filename = 'players.txt'):
+        dumpFile = open(filename, 'r')
+        if not dumpFile:
+            raise Exception("Can not open the file '%s'" % (filename))
+        self = pickle.Unpickler(file=dumpFile).load()
+        dumpFile.close()
+        return self
 
     def dumpSalariesToFile(self, filename = 'salaries.txt'):
         dumpFile = open(filename, 'w')
@@ -169,10 +231,11 @@ class PlayersProvider:
 
 class FanduelApiProvider:
     def __init__(self):
+        default_logging()
         logDir = '/tmp/fanduel'
         if not os.path.exists(logDir):
             os.makedirs(logDir)
-        self.grab = Grab(log_dir=logDir)
+        self.grab = Grab(log_dir=logDir, debug_post=True)
 
     def auth(self, email):
         cookiefile = "%s.cookie" % (re.sub('[!@#$.]', '', email))
@@ -200,24 +263,47 @@ class FanduelApiProvider:
         return jsonInitData['additions']
 
     def openContest(self, contest):
-        contestUrl = ENTER_GAME_PAGE % (contest.gameId(), contest.tableId())
-        #print "enter to %s" % (contestUrl)
-        self.grab.go(contestUrl)
-        #print "return code [%s]" % (self.grab.response.code)
+        self.grab.go(contest.url())
 
     def getPlayerData(listOfPlayers):
         jsonPlayers = []
         for p in listOfPlayers:
-            jsonPlayer = [p.position(), p.id(), p.fixture(), p.teamId()]
+            jsonPlayer = [p.position(), p.id(), p.fixture(), p.teamId(), 'false']
             jsonPlayers.append(json.dumps(jsonPlayer))
         playerData = json.dumps(jsonPlayers)
         return playerData
 
-    def enterContest(self, contest, playerData):
+    def getAttr(self, path, attr, selector = None):
+        if not selector:
+            selector = self.grab.doc
+        return selector.select(path).attr(attr)
+
+    def joinContest(self, contest, playerData):
         self.openContest(contest)
-        self.grab.set_input('playerData', playerData)
-        self.grab.set_input('entryForm-tablespec_id', '')
-        self.grab.submit()
+        getValue = lambda name: self.grab.doc.select("//form/input[@name='%s']"%(name)).attr('value')
+        postReq = {}
+        postReq['cc_session_id'] = getValue('cc_session_id')
+        postReq['cc_action'] = 'cca_jointable'
+        postReq['cc_failure_url'] = getValue('cc_failure_url')
+        postReq['game_id'] = getValue('game_id')
+        postReq['playerData'] = playerData
+        postReq['table_id'] = str(contest.uniqueId())
+        postReq['tablespec_id'] = ''
+        postReq['is_public'] = getValue('is_public')
+        postReq['currencytype'] = getValue('currencytype')
+        print json.dumps(postReq, indent=2)
+        self.grab.setup(multipart_post=postReq)
+        #    {
+        #    'cc_session_id':getValue('cc_session_id'),
+        #    'cc_action':'cca_jointable',
+        #    'cc_failure_url' : getValue('cc_failure_url'),
+        #    'game_id' : getValue('game_id'), 'playerData' : playerData, 
+        #    'table_id' : str(contest.uniqueId()), 'tablespec_id' : str(contest.tableSpecId()),
+        #    'is_public' : '1', 'currencytype' : '1'
+        #    })
+        self.grab.request()
+        # Live scores for S90740711 | FanDuel
+        print self.grab.doc.select('//head/title').text()
         return self.grab.response.code
 
     def getPlayers(self, contest):
@@ -235,47 +321,111 @@ class FanduelSelenium:
         self.driver = webdriver.Firefox()
 
     def auth(self, email):
-        cookiefile = "%s_.cookie" % (re.sub('[!@#$.]', '', email))
-        open(cookiefile, 'a+').close()
         password = getpass.getpass()
         self.driver.get(LOGIN_PAGE)
         loginForm = self.driver.find_element_by_id('ccf0')
         loginForm.find_element_by_id('email').send_keys(email)
         loginForm.find_element_by_id('password').send_keys(password)
         loginForm.submit()
-        cookiefile.write(json.dumps((self.driver.get_cookies())))
+        print self.driver.current_url
 
+    def getContests(self):
+        if self.driver.current_url != HOME_PAGE:
+            self.driver.get(HOME_PAGE)
+        response = self.driver.page_source;
+        rawJsonDataBegin = response.find('LobbyConnection.initialData') + len('LobbyConnection.initialData = ')
+        rawJsonDataEnd = response.rfind(';', rawJsonDataBegin, response.find('LobbyConnection.lastUpdate'))
+        rawJsonInitData = response[rawJsonDataBegin:rawJsonDataEnd]
+        jsonInitData = json.loads(rawJsonInitData)
+        return jsonInitData['additions']
 
-def main(argv=None):
-    cmdOps = parseOptions(argv)
-    default_logging()
+    def getPlayers(self, contest):
+        self.driver.get(contest.url())
+        response = self.driver.page_source;
+        rawJsonDataBegin = response.find('FD.playerpicker.allPlayersFullData') + len('FD.playerpicker.allPlayersFullData = ')
+        rawJsonDataEnd = response.rfind(';', rawJsonDataBegin, response.find('FD.playerpicker.teamIdToFixtureCompactString'))
+        rawJsonData = response[rawJsonDataBegin:rawJsonDataEnd]
+        return json.loads(rawJsonData)
 
-    api = FanduelApiProvider()
-    if not api.auth(cmdOps.email) == 200:
-        return 2;
+    def joinContest(self, contest, playersName, allPlayers):
+        self.driver.get(contest.url())
+        for name in playersName:
+            playerId = allPlayers[name].id()
+            # <a data-role="add" id="add-button" data-player-id="6894"
+            onPlayer = self.driver.find_element(By.XPATH, "//a[@data-player-id='%s']" % (playerId))
+            if onPlayer:    
+                onPlayer.click()
+            else:
+                print "Cant find '%s' with id %s" % (name, playerId)
+
+        # <input id="enterButton" type="submit" class="button jumbo primary" value="Enter" data-nav-warning="off">
+        self.driver.find_element_by_id('enterButton').click()
+        time.sleep(5)
+
+    def __del__(self):
+        self.driver.quit()
+
+def worker(browser, cmdOps):
+
+    allPlayers = PlayersProvider({}).loadFromFile()
+    print "loaded %d players" % (len(allPlayers))
+
+    browser.auth(cmdOps.email)
     print "Authorization passed"
 
-    allGames = ContestsProvider(api.getContests())
+    allGames = ContestsProvider(browser.getContests())
     print "loaded %d contests" % (len(allGames))
 
     nflGames = allGames.getNFL()
     print "found %d NFL games" % (len(nflGames))
 
-    #freeNflGames = nflGames.getFreeGames()
-    #print "found %d NFL games" % (len(freeNflGames))
+    freeNflGames = nflGames.getFreeGames()
+    print "found %d NFL games" % (len(freeNflGames))
 
-    #predef = '[["QB",34308,"86901","12"],["RB",10777,"86901","11"],["RB",6728,"86905","16"],["WR",11505,"86906","13"],["WR",14187,"86783","8"],["WR",27445,"86904","28"],["TE",14394,"86906","13"],["K",6767,"86784","9"],["D",12534,"86784","9"]]'
-    #for game in freeNflGames:
-    #    if game.freeSpace() > 0:
-    #        ret = api.enterContest(game, predef)
-    #        print "Enter to '%s' : %d" % (game.title(), ret) 
+    players = [
+        'Matt Flynn',
+        'Trey Watts',
+        'DuJuan Harris',
+        'Chris Givens',
+        'Courtney Roby',
+        'Jarrett Boykin',
+        'Matthew Mulligan',
+        'Chandler Catanzaro',
+        'Atlanta Falcons']
+
+    #falseMerge = 0
+    #allPlayers = PlayersProvider({})
+    #for game in nflGames:
+    #    players = PlayersProvider(browser.getPlayers(game))
+    #    added = allPlayers.merge(players)
+    #    if added == 0:
+    #        if falseMerge == 5:
+    #            break
+    #        falseMerge += 1
+    #    print "Added %d playes, total %d" % (added, len(allPlayers))
+    #allPlayers.saveToFile()
+
+
+    for game in freeNflGames:
+        if game.freeSpace() > 0:
+            print "Enter to game '%s'" % (game.url())
+            ret = browser.joinContest(game, players, allPlayers)
+            break
+
+    #for c in nflGames:
+    #    players = PlayersProvider(api.getPlayers(c))
+    #    if len(players) == 553:
+    #        players.dumpSalariesToFile()
     #        break
 
-    for c in nflGames:
-        players = PlayersProvider(api.getPlayers(c))
-        if len(players) == 553:
-            players.dumpSalariesToFile()
-            break
+
+def main(argv=None):
+    cmdOps = parseOptions(argv)
+
+    #browser = FanduelApiProvider()
+    browser = FanduelSelenium()
+
+    worker(browser, cmdOps)
                      
     return 0
 
