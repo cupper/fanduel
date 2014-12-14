@@ -22,25 +22,11 @@ MAIN_PAGE = 'https://www.fanduel.com'
 HOME_PAGE = 'https://www.fanduel.com/p/Home'
 LOGIN_PAGE = 'https://www.fanduel.com/login'
 
-# first - gameId
-# second - tableId
-ENTER_GAME_PAGE = 'https://www.fanduel.com/e/Game/%s?tableId=%s&fromLobby=true'
 
-# <form action='https://www.fanduel.com/c/CCEntry' id='enterForm'>
-
-"""
-FD.playerpicker.allPlayersFullData = {
-    "29358":["QB","Marcus Mariota","95320","2714","1000","11300",37.9,"3",false,4,"","recent",""],
-    "33128":[
-        "QB"
-        "Shane Carden"
-        "86352" - data-fixture
-        "2744" - team ID
-        "1000","10000",20.3,"3",false,4,"","recent",""],
-
-[["QB",29358,"95320","2714"],["RB",41911,"86353","2743"],["RB",43886,"95319","5723"],["WR",0],["WR",0],["WR",0],["TE",0]]
-<input type='text' id='playerData'
-"""
+def getPassword():
+    if "counter" not in getPassword.__dict__:
+        getPassword.password = getpass.getpass()
+    return getPassword.password
 
 def parseOptions(argv):
     usage = "usage: %prog [options] arg"
@@ -129,7 +115,7 @@ class Player:
     def name(self):     return self.__safeIndex__(1)
     def fixture(self):  return self.__safeIndex__(2)
     def teamId(self):   return self.__safeIndex__(3)
-    def salary(self):   return self.__safeIndex__(5)
+    def salary(self):   return int(self.__safeIndex__(5))
 
     def diff(self, other):
         buff = StringIO.StringIO()
@@ -185,6 +171,28 @@ class PlayersProvider:
             print "Found collisions %d" % (foundCollisions)
         playersCollision.close()
         return added
+
+    def add(self, player):
+        if player.name() in self.players.keys():
+            raise Exception("player '%s' already in provider" % (player.name()))
+        self.players[player.name()] = player
+
+    def fetchByNames(self, listOfNames, fullMatch = False):
+        fetched = PlayersProvider({})
+        for name in listOfNames:
+            if name in self.players.keys():
+                fetched.add(self.players[name])
+            elif fullMatch:
+                raise Exception("player '%s' not exist in current provider" % (name))
+            else:
+                print "playes '%s' not exist in provider" % (name)
+        return fetched
+
+    def summarizeBySalary(self):
+        salary = 0
+        for k,p in self.players.iteritems():
+            salary += p.salary()
+        return salary
 
     def saveToFile(self, filename = 'players.txt'):
         dumpFile = open(filename, 'w')
@@ -243,10 +251,9 @@ class FanduelApiProvider:
             open(cookiefile, 'a+').close()
             self.grab.setup(cookiefile=cookiefile)
             print "real authorization"
-            password = getpass.getpass()
             self.grab.go(LOGIN_PAGE)
             self.grab.set_input('email', email)
-            self.grab.set_input('password', password)
+            self.grab.set_input('password', getPassword())
             self.grab.submit()
         else:
             print "use coockie"
@@ -302,7 +309,6 @@ class FanduelApiProvider:
         #    'is_public' : '1', 'currencytype' : '1'
         #    })
         self.grab.request()
-        # Live scores for S90740711 | FanDuel
         print self.grab.doc.select('//head/title').text()
         return self.grab.response.code
 
@@ -321,11 +327,10 @@ class FanduelSelenium:
         self.driver = webdriver.Firefox()
 
     def auth(self, email):
-        password = getpass.getpass()
         self.driver.get(LOGIN_PAGE)
-        loginForm = self.driver.find_element_by_id('ccf0')
+        loginForm = self.driver.find_element_by_tag_name('form')
         loginForm.find_element_by_id('email').send_keys(email)
-        loginForm.find_element_by_id('password').send_keys(password)
+        loginForm.find_element_by_id('password').send_keys(getPassword())
         loginForm.submit()
         print self.driver.current_url
 
@@ -339,8 +344,14 @@ class FanduelSelenium:
         jsonInitData = json.loads(rawJsonInitData)
         return jsonInitData['additions']
 
+    def openContest(self, contest):
+        if self.driver.current_url != contest.url():
+            self.driver.get(contest.url())
+        return self.driver.title.count(contest.title()) > 0
+
     def getPlayers(self, contest):
-        self.driver.get(contest.url())
+        if self.driver.current_url != contest.url():
+            self.driver.get(contest.url())
         response = self.driver.page_source;
         rawJsonDataBegin = response.find('FD.playerpicker.allPlayersFullData') + len('FD.playerpicker.allPlayersFullData = ')
         rawJsonDataEnd = response.rfind(';', rawJsonDataBegin, response.find('FD.playerpicker.teamIdToFixtureCompactString'))
@@ -348,19 +359,17 @@ class FanduelSelenium:
         return json.loads(rawJsonData)
 
     def joinContest(self, contest, playersName, allPlayers):
-        self.driver.get(contest.url())
+        if self.driver.current_url != contest.url():
+            self.driver.get(contest.url())
         for name in playersName:
             playerId = allPlayers[name].id()
-            # <a data-role="add" id="add-button" data-player-id="6894"
             onPlayer = self.driver.find_element(By.XPATH, "//a[@data-player-id='%s']" % (playerId))
             if onPlayer:    
                 onPlayer.click()
             else:
-                print "Cant find '%s' with id %s" % (name, playerId)
-
-        # <input id="enterButton" type="submit" class="button jumbo primary" value="Enter" data-nav-warning="off">
+                raise Exception("Cant find '%s' with id %s" % (name, playerId))
         self.driver.find_element_by_id('enterButton').click()
-        time.sleep(5)
+        print self.driver.title
 
     def __del__(self):
         self.driver.quit()
@@ -368,10 +377,10 @@ class FanduelSelenium:
 def worker(browser, cmdOps):
 
     allPlayers = PlayersProvider({}).loadFromFile()
-    print "loaded %d players" % (len(allPlayers))
+    print "restored %d players from file" % (len(allPlayers))
 
     browser.auth(cmdOps.email)
-    print "Authorization passed"
+    print "authorization passed"
 
     allGames = ContestsProvider(browser.getContests())
     print "loaded %d contests" % (len(allGames))
@@ -380,9 +389,9 @@ def worker(browser, cmdOps):
     print "found %d NFL games" % (len(nflGames))
 
     freeNflGames = nflGames.getFreeGames()
-    print "found %d NFL games" % (len(freeNflGames))
+    print "found %d NFL free games" % (len(freeNflGames))
 
-    players = [
+    teamPlayersNames = [
         'Matt Flynn',
         'Trey Watts',
         'DuJuan Harris',
@@ -408,8 +417,20 @@ def worker(browser, cmdOps):
 
     for game in freeNflGames:
         if game.freeSpace() > 0:
-            print "Enter to game '%s'" % (game.url())
-            ret = browser.joinContest(game, players, allPlayers)
+            print "open game '%s'" % (game.title())
+            if not browser.openContest(game):
+                print "could not open the game"
+            players = PlayersProvider(browser.getPlayers(game))
+            team = players.fetchByNames(teamPlayersNames)
+            if len(team) != 9:
+                print "could not create full team"
+                break 
+            print "Salary of team %d$ and game provide %d$" % (team.summarizeBySalary(), game.salary())
+            if team.summarizeBySalary() <= game.salary():
+                print "Enter to game '%s'" % (game.url())
+                ret = browser.joinContest(game, teamPlayersNames, players)
+            else:
+                print "Can't enter to game '%s' team salary > game provide" % (game.title())
             break
 
     #for c in nflGames:
