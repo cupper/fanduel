@@ -1,0 +1,807 @@
+Levine Toilolo
+[2] 86787 vs. 86910
+[5] 4900 vs. 5000
+
+Matt Bryant
+[2] 86787 vs. 86910
+
+Aaron Rodgers
+[2] 86789 vs. 86910
+[5] 10200 vs. 10400
+
+Harry Douglas
+[2] 86787 vs. 86910
+[5] 5800 vs. 5900
+
+Eddie Lacy
+[2] 86789 vs. 86910
+[5] 8400 vs. 8500
+
+Sean Renfree
+[2] 86787 vs. 86910
+
+Atlanta Falcons
+[2] 86787 vs. 86910
+
+Ike Ariguzo
+[2] 86789 vs. 86910
+
+Richard Rodgers
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+John Kuhn
+[2] 86789 vs. 86910
+
+Roddy White
+[2] 86787 vs. 86910
+[5] 7000 vs. 7400
+
+Jarrett Boykin
+[2] 86789 vs. 86910
+
+Matt Flynn
+[2] 86789 vs. 86910
+
+Andrew Quarless
+[2] 86789 vs. 86910
+[5] 4800 vs. 4900
+
+Devin Hester
+[2] 86787 vs. 86910
+[5] 4500 vs. 4900
+
+Davante Adams
+[2] 86789 vs. 86910
+[5] 5900 vs. 6000
+
+Courtney Roby
+[2] 86787 vs. 86910
+
+Mason Crosby
+[2] 86789 vs. 86910
+
+Brandon Bostick
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+Bernard Reedy
+[2] 86787 vs. 86910
+
+Matt Ryan
+[2] 86787 vs. 86910
+
+T.J. Yates
+[2] 86787 vs. 86910
+
+Jeff Janis
+[2] 86789 vs. 86910
+
+Bear Pascoe
+[2] 86787 vs. 86910
+[5] 4500 vs. 4600
+
+Green Bay Packers
+[2] 86789 vs. 86910
+[5] 5200 vs. 5100
+
+Eric Weems
+[2] 86787 vs. 86910
+
+James Starks
+[2] 86789 vs. 86910
+
+Scott Tolzien
+[2] 86789 vs. 86910
+
+Julio Jones
+[2] 86787 vs. 86910
+
+Patrick DiMarco
+[2] 86787 vs. 86910
+
+Randall Cobb
+[2] 86789 vs. 86910
+
+DuJuan Harris
+[2] 86789 vs. 86910
+
+Jordy Nelson
+[2] 86789 vs. 86910
+
+Jacquizz Rodgers
+[2] 86787 vs. 86910
+
+Devonta Freeman
+[2] 86787 vs. 86910
+
+Steven Jackson
+[2] 86787 vs. 86910
+
+Jeff Janis
+[2] 86789 vs. 86910
+
+Levine Toilolo
+[2] 86787 vs. 86910
+[5] 4900 vs. 5000
+
+Matt Bryant
+[2] 86787 vs. 86910
+
+Tavon Austin
+[5] 5800 vs. 5300
+
+Aaron Rodgers
+[2] 86789 vs. 86910
+[5] 10200 vs. 10400
+
+Harry Douglas
+[2] 86787 vs. 86910
+[5] 5800 vs. 5900
+
+Marion Grice
+[5] 4800 vs. 5000
+
+John Carlson
+[5] 4700 vs. 4900
+
+Eddie Lacy
+[2] 86789 vs. 86910
+[5] 8400 vs. 8500
+
+Rob Housler
+[5] 4700 vs. 4800
+
+St Louis Rams
+[5] 5500 vs. 5400
+
+Lance Kendricks
+[5] 4500 vs. 4600
+
+Chandler Catanzaro
+[5] 4800 vs. 4700
+
+Sean Renfree
+[2] 86787 vs. 86910
+
+Atlanta Falcons
+[2] 86787 vs. 86910
+
+Ted Ginn Jr.
+[5] 4800 vs. 5100
+
+Greg Zuerlein
+[5] 4800 vs. 5000
+
+Ike Ariguzo
+[2] 86789 vs. 86910
+
+Jaron Brown
+[5] 5500 vs. 5200
+
+Richard Rodgers
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+John Kuhn
+[2] 86789 vs. 86910
+
+Roddy White
+[2] 86787 vs. 86910
+[5] 7000 vs. 7400
+
+Jarrett Boykin
+[2] 86789 vs. 86910
+
+Benny Cunningham
+[5] 5000 vs. 4800
+
+Matt Flynn
+[2] 86789 vs. 86910
+
+Stepfan Taylor
+[5] 5200 vs. 5500
+
+Michael Floyd
+[5] 6500 vs. 6400
+
+Larry Fitzgerald
+[5] 6300 vs. 6400
+
+Andrew Quarless
+[2] 86789 vs. 86910
+[5] 4800 vs. 4900
+
+Devin Hester
+[2] 86787 vs. 86910
+[5] 4500 vs. 4900
+
+Davante Adams
+[2] 86789 vs. 86910
+[5] 5900 vs. 6000
+
+Courtney Roby
+[2] 86787 vs. 86910
+
+Mason Crosby
+[2] 86789 vs. 86910
+
+Brandon Bostick
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+Bernard Reedy
+[2] 86787 vs. 86910
+
+Matt Ryan
+[2] 86787 vs. 86910
+
+Tre Mason
+[5] 6800 vs. 7200
+
+T.J. Yates
+[2] 86787 vs. 86910
+
+Kenny Britt
+[5] 6000 vs. 6400
+
+Drew Stanton
+[5] 7000 vs. 6800
+
+Bear Pascoe
+[2] 86787 vs. 86910
+[5] 4500 vs. 4600
+
+Green Bay Packers
+[2] 86789 vs. 86910
+[5] 5200 vs. 5100
+
+Eric Weems
+[2] 86787 vs. 86910
+
+Andre Ellington
+[5] 7000 vs. 7400
+
+James Starks
+[2] 86789 vs. 86910
+
+Jared Cook
+[5] 5200 vs. 4900
+
+Scott Tolzien
+[2] 86789 vs. 86910
+
+Stedman Bailey
+[5] 6000 vs. 6300
+
+Julio Jones
+[2] 86787 vs. 86910
+
+Shaun Hill
+[5] 6900 vs. 6700
+
+Arizona Cardinals
+[5] 5200 vs. 5100
+
+Patrick DiMarco
+[2] 86787 vs. 86910
+
+Randall Cobb
+[2] 86789 vs. 86910
+
+John Brown
+[5] 6600 vs. 6400
+
+DuJuan Harris
+[2] 86789 vs. 86910
+
+Jordy Nelson
+[2] 86789 vs. 86910
+
+Jacquizz Rodgers
+[2] 86787 vs. 86910
+
+Devonta Freeman
+[2] 86787 vs. 86910
+
+Steven Jackson
+[2] 86787 vs. 86910
+
+Jeff Janis
+[2] 86789 vs. 86910
+
+Levine Toilolo
+[2] 86787 vs. 86910
+[5] 4900 vs. 5000
+
+Matt Bryant
+[2] 86787 vs. 86910
+
+Tavon Austin
+[5] 5800 vs. 5300
+
+Aaron Rodgers
+[2] 86789 vs. 86910
+[5] 10200 vs. 10400
+
+Harry Douglas
+[2] 86787 vs. 86910
+[5] 5800 vs. 5900
+
+Marion Grice
+[5] 4800 vs. 5000
+
+John Carlson
+[5] 4700 vs. 4900
+
+Eddie Lacy
+[2] 86789 vs. 86910
+[5] 8400 vs. 8500
+
+Rob Housler
+[5] 4700 vs. 4800
+
+St Louis Rams
+[5] 5500 vs. 5400
+
+Lance Kendricks
+[5] 4500 vs. 4600
+
+Chandler Catanzaro
+[5] 4800 vs. 4700
+
+Sean Renfree
+[2] 86787 vs. 86910
+
+Atlanta Falcons
+[2] 86787 vs. 86910
+
+Ted Ginn Jr.
+[5] 4800 vs. 5100
+
+Greg Zuerlein
+[5] 4800 vs. 5000
+
+Ike Ariguzo
+[2] 86789 vs. 86910
+
+Jaron Brown
+[5] 5500 vs. 5200
+
+Richard Rodgers
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+John Kuhn
+[2] 86789 vs. 86910
+
+Roddy White
+[2] 86787 vs. 86910
+[5] 7000 vs. 7400
+
+Jarrett Boykin
+[2] 86789 vs. 86910
+
+Benny Cunningham
+[5] 5000 vs. 4800
+
+Matt Flynn
+[2] 86789 vs. 86910
+
+Stepfan Taylor
+[5] 5200 vs. 5500
+
+Michael Floyd
+[5] 6500 vs. 6400
+
+Larry Fitzgerald
+[5] 6300 vs. 6400
+
+Andrew Quarless
+[2] 86789 vs. 86910
+[5] 4800 vs. 4900
+
+Devin Hester
+[2] 86787 vs. 86910
+[5] 4500 vs. 4900
+
+Davante Adams
+[2] 86789 vs. 86910
+[5] 5900 vs. 6000
+
+Courtney Roby
+[2] 86787 vs. 86910
+
+Mason Crosby
+[2] 86789 vs. 86910
+
+Brandon Bostick
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+Bernard Reedy
+[2] 86787 vs. 86910
+
+Matt Ryan
+[2] 86787 vs. 86910
+
+Tre Mason
+[5] 6800 vs. 7200
+
+T.J. Yates
+[2] 86787 vs. 86910
+
+Kenny Britt
+[5] 6000 vs. 6400
+
+Drew Stanton
+[5] 7000 vs. 6800
+
+Bear Pascoe
+[2] 86787 vs. 86910
+[5] 4500 vs. 4600
+
+Green Bay Packers
+[2] 86789 vs. 86910
+[5] 5200 vs. 5100
+
+Eric Weems
+[2] 86787 vs. 86910
+
+Andre Ellington
+[5] 7000 vs. 7400
+
+James Starks
+[2] 86789 vs. 86910
+
+Jared Cook
+[5] 5200 vs. 4900
+
+Scott Tolzien
+[2] 86789 vs. 86910
+
+Stedman Bailey
+[5] 6000 vs. 6300
+
+Julio Jones
+[2] 86787 vs. 86910
+
+Shaun Hill
+[5] 6900 vs. 6700
+
+Arizona Cardinals
+[5] 5200 vs. 5100
+
+Patrick DiMarco
+[2] 86787 vs. 86910
+
+Randall Cobb
+[2] 86789 vs. 86910
+
+John Brown
+[5] 6600 vs. 6400
+
+DuJuan Harris
+[2] 86789 vs. 86910
+
+Jordy Nelson
+[2] 86789 vs. 86910
+
+Jacquizz Rodgers
+[2] 86787 vs. 86910
+
+Devonta Freeman
+[2] 86787 vs. 86910
+
+Steven Jackson
+[2] 86787 vs. 86910
+
+Levine Toilolo
+[2] 86787 vs. 86910
+[5] 4900 vs. 5000
+
+Matt Bryant
+[2] 86787 vs. 86910
+
+Aaron Rodgers
+[2] 86789 vs. 86910
+[5] 10200 vs. 10400
+
+Harry Douglas
+[2] 86787 vs. 86910
+[5] 5800 vs. 5900
+
+Eddie Lacy
+[2] 86789 vs. 86910
+[5] 8400 vs. 8500
+
+Sean Renfree
+[2] 86787 vs. 86910
+
+Atlanta Falcons
+[2] 86787 vs. 86910
+
+Ike Ariguzo
+[2] 86789 vs. 86910
+
+Richard Rodgers
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+John Kuhn
+[2] 86789 vs. 86910
+
+Roddy White
+[2] 86787 vs. 86910
+[5] 7000 vs. 7400
+
+Jarrett Boykin
+[2] 86789 vs. 86910
+
+Matt Flynn
+[2] 86789 vs. 86910
+
+Andrew Quarless
+[2] 86789 vs. 86910
+[5] 4800 vs. 4900
+
+Devin Hester
+[2] 86787 vs. 86910
+[5] 4500 vs. 4900
+
+Davante Adams
+[2] 86789 vs. 86910
+[5] 5900 vs. 6000
+
+Courtney Roby
+[2] 86787 vs. 86910
+
+Mason Crosby
+[2] 86789 vs. 86910
+
+Brandon Bostick
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+Bernard Reedy
+[2] 86787 vs. 86910
+
+Matt Ryan
+[2] 86787 vs. 86910
+
+T.J. Yates
+[2] 86787 vs. 86910
+
+Jeff Janis
+[2] 86789 vs. 86910
+
+Bear Pascoe
+[2] 86787 vs. 86910
+[5] 4500 vs. 4600
+
+Green Bay Packers
+[2] 86789 vs. 86910
+[5] 5200 vs. 5100
+
+Eric Weems
+[2] 86787 vs. 86910
+
+James Starks
+[2] 86789 vs. 86910
+
+Scott Tolzien
+[2] 86789 vs. 86910
+
+Julio Jones
+[2] 86787 vs. 86910
+
+Patrick DiMarco
+[2] 86787 vs. 86910
+
+Randall Cobb
+[2] 86789 vs. 86910
+
+DuJuan Harris
+[2] 86789 vs. 86910
+
+Jordy Nelson
+[2] 86789 vs. 86910
+
+Jacquizz Rodgers
+[2] 86787 vs. 86910
+
+Devonta Freeman
+[2] 86787 vs. 86910
+
+Steven Jackson
+[2] 86787 vs. 86910
+
+Jeff Janis
+[2] 86789 vs. 86910
+
+Levine Toilolo
+[2] 86787 vs. 86910
+[5] 4900 vs. 5000
+
+Matt Bryant
+[2] 86787 vs. 86910
+
+Tavon Austin
+[5] 5800 vs. 5300
+
+Aaron Rodgers
+[2] 86789 vs. 86910
+[5] 10200 vs. 10400
+
+Harry Douglas
+[2] 86787 vs. 86910
+[5] 5800 vs. 5900
+
+Marion Grice
+[5] 4800 vs. 5000
+
+John Carlson
+[5] 4700 vs. 4900
+
+Eddie Lacy
+[2] 86789 vs. 86910
+[5] 8400 vs. 8500
+
+Rob Housler
+[5] 4700 vs. 4800
+
+St Louis Rams
+[5] 5500 vs. 5400
+
+Lance Kendricks
+[5] 4500 vs. 4600
+
+Chandler Catanzaro
+[5] 4800 vs. 4700
+
+Sean Renfree
+[2] 86787 vs. 86910
+
+Atlanta Falcons
+[2] 86787 vs. 86910
+
+Ted Ginn Jr.
+[5] 4800 vs. 5100
+
+Greg Zuerlein
+[5] 4800 vs. 5000
+
+Ike Ariguzo
+[2] 86789 vs. 86910
+
+Jaron Brown
+[5] 5500 vs. 5200
+
+Richard Rodgers
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+John Kuhn
+[2] 86789 vs. 86910
+
+Roddy White
+[2] 86787 vs. 86910
+[5] 7000 vs. 7400
+
+Jarrett Boykin
+[2] 86789 vs. 86910
+
+Benny Cunningham
+[5] 5000 vs. 4800
+
+Matt Flynn
+[2] 86789 vs. 86910
+
+Stepfan Taylor
+[5] 5200 vs. 5500
+
+Michael Floyd
+[5] 6500 vs. 6400
+
+Larry Fitzgerald
+[5] 6300 vs. 6400
+
+Andrew Quarless
+[2] 86789 vs. 86910
+[5] 4800 vs. 4900
+
+Devin Hester
+[2] 86787 vs. 86910
+[5] 4500 vs. 4900
+
+Davante Adams
+[2] 86789 vs. 86910
+[5] 5900 vs. 6000
+
+Courtney Roby
+[2] 86787 vs. 86910
+
+Mason Crosby
+[2] 86789 vs. 86910
+
+Brandon Bostick
+[2] 86789 vs. 86910
+[5] 4900 vs. 5000
+
+Bernard Reedy
+[2] 86787 vs. 86910
+
+Matt Ryan
+[2] 86787 vs. 86910
+
+Tre Mason
+[5] 6800 vs. 7200
+
+T.J. Yates
+[2] 86787 vs. 86910
+
+Kenny Britt
+[5] 6000 vs. 6400
+
+Drew Stanton
+[5] 7000 vs. 6800
+
+Bear Pascoe
+[2] 86787 vs. 86910
+[5] 4500 vs. 4600
+
+Green Bay Packers
+[2] 86789 vs. 86910
+[5] 5200 vs. 5100
+
+Eric Weems
+[2] 86787 vs. 86910
+
+Andre Ellington
+[5] 7000 vs. 7400
+
+James Starks
+[2] 86789 vs. 86910
+
+Jared Cook
+[5] 5200 vs. 4900
+
+Scott Tolzien
+[2] 86789 vs. 86910
+
+Stedman Bailey
+[5] 6000 vs. 6300
+
+Julio Jones
+[2] 86787 vs. 86910
+
+Shaun Hill
+[5] 6900 vs. 6700
+
+Arizona Cardinals
+[5] 5200 vs. 5100
+
+Patrick DiMarco
+[2] 86787 vs. 86910
+
+Randall Cobb
+[2] 86789 vs. 86910
+
+John Brown
+[5] 6600 vs. 6400
+
+DuJuan Harris
+[2] 86789 vs. 86910
+
+Jordy Nelson
+[2] 86789 vs. 86910
+
+Jacquizz Rodgers
+[2] 86787 vs. 86910
+
+Devonta Freeman
+[2] 86787 vs. 86910
+
+Steven Jackson
+[2] 86787 vs. 86910
+
